@@ -7,9 +7,9 @@ this script supposedly scan the rndis interface and nmap it to find where the ip
 # BUG TERMUX FIRST TIME
 ## DO PKG UPDATE AND UPGRADE 
 ```sh
-pkg update && pkg upgrade
+pkg update -y && pkg upgrade -y
 
-#just enter when it ask Y/N/blah
+#just enter when it ask default Y/N/blah
 ```
 
 # USAGE
