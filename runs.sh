@@ -62,10 +62,6 @@ check_package ipcalc
 printf "${GREEN}Checking Openssh ...${NC}\n"
 check_package openssh
 
-# Check If Xclip Is Installed
-printf "${GREEN}Checking Xclip ...${NC}\n"
-check_package xclip
-
 # Ask user the username
 read -r -p "$(printf "${BLUE}Enter Your Username ... OR leave it empty to default ${NC}\n")" USERNAME </dev/tty
 
@@ -151,9 +147,6 @@ nmap_scan(){
         break
       fi
       printf "${BLUE}Try This Command 'ssh $USERNAME@$result' ${NC}\n"
-      printf "Command Copied To Clipboard ...${NC}\n"
-      # copy ssh command to clipboard with xclip
-      xclip -sel clip <<< "ssh $USERNAME@$result"
       break
     fi
 
