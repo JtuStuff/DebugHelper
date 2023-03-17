@@ -38,6 +38,22 @@ apt-get upgrade -y -q -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="-
 
 # Function To Check If Package Is Installed
 check_package(){
+
+  # if openssh use command -v ssh
+  if [ "$1" = "openssh" ]
+  then
+    if ! command -v ssh &> /dev/null
+    then 
+      printf "${RED}$1 Not Installed ...${NC}\n"
+      read -r -p "$(printf "${BLUE}Do You Want To Install $1 ... (y/n)\n${NC}")" answer </dev/tty
+      if [ "$answer" != "${answer#[Yy]}" ] ;then
+        apt-get install openssh -y > /dev/null
+      else
+        exit
+      fi
+    fi
+  fi
+  
   if ! command -v $1 &> /dev/null
   then 
     printf "${RED}$1 Not Installed ...${NC}\n"
@@ -63,7 +79,7 @@ printf "${GREEN}Checking Openssh ...${NC}\n"
 check_package openssh
 
 # Ask user the username
-read -r -p "$(printf "${BLUE}Enter Your Username ... OR leave it empty to default ${NC}\n")" USERNAME </dev/tty
+read -r -p "$(printf "${BLUE}Enter Your Username ... OR leave it empty to default\n${NC}")" USERNAME </dev/tty
 
 # Make Function To Check Interface
 check_interface(){
