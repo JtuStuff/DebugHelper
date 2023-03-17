@@ -38,13 +38,6 @@ apt-get upgrade -y -q -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="-
 
 # Function To Check If Package Is Installed
 check_package(){
-
-  # if openssh change $1 to ssh
-  if [ "$1" = "openssh" ]
-  then
-    $1="ssh"
-  fi
-
   if ! command -v $1 &> /dev/null
   then 
     printf "${RED}$1 Not Installed ...${NC}\n"
@@ -64,10 +57,6 @@ check_package nmap
 # Check If Ipcalc Is Installed
 printf "${GREEN}Checking IPCalc ...${NC}\n"
 check_package ipcalc
-
-# Check If openssh Is Installed
-printf "${GREEN}Checking Openssh ...${NC}\n"
-check_package openssh
 
 # Ask user the username
 read -r -p "$(printf "${BLUE}Enter Your Username ... OR leave it empty to default\n${NC}")" USERNAME </dev/tty
