@@ -13,6 +13,7 @@ PHONE_IP=""
 PHONE_NETMASK=""
 NETWORK_ADDRESS=""
 INTERFACE=""
+USERNAME=""
 COUNTER=0
 
 # Clear Screen
@@ -56,6 +57,17 @@ check_package nmap
 # Check If Ipcalc Is Installed
 printf "${GREEN}Checking IPCalc ...${NC}\n"
 check_package ipcalc
+
+# Check If openssh Is Installed
+printf "${GREEN}Checking Openssh ...${NC}\n"
+check_package openssh
+
+# Check If Xclip Is Installed
+printf "${GREEN}Checking Xclip ...${NC}\n"
+check_package xclip
+
+# Ask user the username
+read -r -p "$(printf "${BLUE}Enter Your Username ... OR leave it empty to default ${NC}\n")" USERNAME </dev/tty
 
 # Make Function To Check Interface
 check_interface(){
@@ -132,7 +144,16 @@ nmap_scan(){
         exit
       fi
       printf "${GREEN}Possible Ip Address is $result ${NC}\n"
-      printf "${GREEN}Try This Command 'ssh username@$result' ${NC}\n"
+      # if username empty
+      if [ -z "$USERNAME" ]
+      then
+        printf "${BLUE}Try This Command 'ssh username@$result' ${NC}\n"
+        break
+      fi
+      printf "${BLUE}Try This Command 'ssh $USERNAME@$result' ${NC}\n"
+      printf "Command Copied To Clipboard ...${NC}\n"
+      # copy ssh command to clipboard with xclip
+      xclip -sel clip <<< "ssh $USERNAME@$result"
       break
     fi
 
