@@ -37,7 +37,7 @@ check_package(){
   then 
     printf "${RED}$1 Not Installed ...${NC}\n"
     printf "${BLUE}Do You Want To Install $1 ... (y/n)${NC}\n"
-    read -s answer
+    read -r -p answer </dev/tty
     if [ "$answer" != "${answer#[Yy]}" ] ;then
       apt-get install $1 -y > /dev/null
     else
@@ -84,7 +84,7 @@ then
   ifconfig 2> /dev/null
 
   printf "${BLUE}Enter Your Interface Name For Usb Tethering : ${NC}\n"
-  read -s interface
+  read -r -p interface </dev/tty
 
   # Check If Interface Is Found
   printf "${GREEN}Checking Interface ...${NC}\n"
