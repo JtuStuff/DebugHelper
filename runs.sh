@@ -125,7 +125,7 @@ nmap_scan(){
   # Use a for loop to iterate 5 times
   for i in {1..5}; do
     # Call the nmap_scan function and capture its output
-    result="$(nmap -p 22 --open -oG - $NETWORK_ADDRESS | awk '/Up$/{print $2}')"
+    result="$(nmap -T5 -n -Pn -p 22 --open -oG - $NETWORK_ADDRESS | awk '/Up$/{print $2}')"
 
     # If the result is not empty, print it and break out of the loop
     if [ ! -z "$result" ]; then
