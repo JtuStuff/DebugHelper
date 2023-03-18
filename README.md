@@ -1,7 +1,5 @@
-# IPscan
-idk im just dumb w/ bash
-
-this script supposedly scan the rndis interface and nmap it to find where the ip has ssh open
+# DebugHelper
+this script supposedly to scan the network and connect trough ssh and dmesg things 
 
 # USAGE
 ```sh

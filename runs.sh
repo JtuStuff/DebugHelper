@@ -1,5 +1,5 @@
 #!/bin/bash
-# IP & PORT SCANNER FOR RNDIS INTERFACE 
+# Auto Debug Collector
 # @Flyingthacat (github)
 
 # COLORS
