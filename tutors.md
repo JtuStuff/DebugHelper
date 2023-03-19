@@ -1,6 +1,6 @@
-New testing instructions:
-0. Disable NootedRed on your system
-1. Install
+<!-- New testing instructions:
+0. Disable NootedRed on your system -->
+<!-- 1. Install
 https://github.com/acidanthera/DebugEnhancer
 and add -dbgenhiolog -nreddbg to your boot args
 2. Replace whatever build of NootedRed you had with the build NC or Visual is going to send you, or the build you're instructed to test
@@ -24,10 +24,10 @@ Turn on full disk access as well
 9. Enable stealth mode
 10. Restart macOS and try to ssh in from the second device
 11. Once SSH works, enable NootedRed, do a OC snapshot, and reboot
-12. Once the system starts booting, run the following command ({password} being your user password):
-while true; do sshpass -p {password} ssh -o StrictHostKeyChecking=no {user name}@{IP} -t "sudo dmesg" | curl -F file=@- 0x0.st; done
-13. Once the screen goes black with the backlight on for 30+ seconds, run the following two in a separate terminal session:
-1) sshpass -p {password} ssh -o StrictHostKeyChecking=no {user name}@{IP} -t "ioreg -flxw0" | curl -F file=@- 0x0.st
-2) sshpass -p {password} ssh -o StrictHostKeyChecking=no {user name}@{IP} -t "/System/Library/Extensions/AppleGraphicsControl.kext/Contents/MacOS/AGDCDiagnose" | curl -F file=@- 0x0.st
-14. Send a link from each command's output 
-15. Rejoice, because you just managed to finish all steps without facing any major roadblocks, and wait for analysis of the output
+12. Once the system starts booting, run the following command ({password} being your user password): -->
+<!-- while true; do sshpass -p {password} ssh -o StrictHostKeyChecking=no {user name}@{IP} -t "sudo dmesg" | curl -F file=@- 0x0.st; done -->
+<!-- 13. Once the screen goes black with the backlight on for 30+ seconds, run the following two in a separate terminal session: -->
+<!-- 1) sshpass -p {password} ssh -o StrictHostKeyChecking=no {user name}@{IP} -t "ioreg -flxw0" | curl -F file=@- 0x0.st -->
+<!-- 2) sshpass -p {password} ssh -o StrictHostKeyChecking=no {user name}@{IP} -t "/System/Library/Extensions/AppleGraphicsControl.kext/Contents/MacOS/AGDCDiagnose" | curl -F file=@- 0x0.st -->
+<!-- 14. Send a link from each command's output 
+15. Rejoice, because you just managed to finish all steps without facing any major roadblocks, and wait for analysis of the output -->

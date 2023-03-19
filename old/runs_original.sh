@@ -36,7 +36,7 @@ printf "${GREEN}Upgrading Termux ...${NC}\n"
 printf "${BLUE}This May Take A While ...${NC}\n"
 apt-get upgrade -y -q -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" > /dev/null
 
-# Function To Check If Package Is Installed
+Function To Check If Package Is Installed
 check_package(){
   if ! command -v $1 &> /dev/null
   then 
@@ -74,12 +74,14 @@ check_interface(){
 
 # Make Function To Get Ip Address From Interface
 get_ip(){
-  ifconfig 2> /dev/null | grep -A 1 "$1" | awk '/inet /{print $2}'
+  # ifconfig 2> /dev/null | grep -A 1 "$1" | awk '/inet /{print $2}'
+  ip a | grep -A 2 "$1" | awk '/inet /{print $2}' | cut -d '/' -f 1
 }
 
 # Make Function To Get Netmask From Interface
 get_netmask(){
-  ifconfig 2> /dev/null | grep -A 1 "$1" | awk '/netmask/{print $4}'
+  # ifconfig 2> /dev/null | grep -A 1 "$1" | awk '/netmask/{print $4}'
+  ip a | grep -A 2 "$1" | awk '/inet /{print $2}' | cut -d '/' -f 2
 }
 
 # Make function to set interface
@@ -185,13 +187,17 @@ then
   printf "${RED}It Seems Your Interface Is Not Rndis Or Usb0 ... Trying The Manual Method${NC}\n"
   
   # printf debug from ifconfig
-  ifconfig 2> /dev/null
+  # ifconfig 2> /dev/null
+
+  # Use ip a
+  ip a 2> /dev/null
 
   read -r -p "$(printf "${BLUE}Enter Your Interface Name For Usb Tethering : \n${NC}")" interface </dev/tty
 
   # Check If Interface Is Found
   printf "${GREEN}Checking Interface ...${NC}\n"
-  if ! ifconfig 2> /dev/null | grep -q "$interface"
+  # if ! ifconfig 2> /dev/null | grep -q "$interface"
+  if ! ip a 2> /dev/null | grep -q "$interface"
   then
     printf "${RED}$interface Interface Not Found !!, You must be Entering A Wrong Interface Name${NC}\n"
     exit
