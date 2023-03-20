@@ -1,22 +1,17 @@
-import os
-import nmap
-import time
-import json
-import paramiko
-import netifaces
+import os, nmapHandler, time, json, paramiko, netifaces, re
 from termcolor import colored
 from paramiko import SSHClient
 
-# VARS
+# Default interfaces
 KNOWN_INTERFACES = ['rndis0', 'usb0']
 
-# Only run in linux
-if os.name != 'posix':
-    print( colored('[-] This script only run in linux', 'red') )
-    exit()
 
-# Clear screen
-os.system('clear')
+
+# Check if run in Termux from prefix
+prefix = os.environ.get('PREFIX')
+if re.search('com.termux', prefix):
+    print( colored('[+] Running in Termux', 'green') )
+    exit()
 
 # If user not ever run this script before make a config file
 if not os.path.isfile('config.json'):
@@ -81,7 +76,7 @@ HOSTS=[]
 COUNTER = 0
 
 while True:
-    nm = nmap.PortScanner()
+    nm = nmapHandler.PortScanner()
     nm.scan(hosts=network_address+'/'+str(cidr), ports='22', arguments='-T5 -n -Pn --open --max-retries 0 --max-scan-delay 0 --min-rate 10000 --max-rate 10000')
     hosts = nm.all_hosts()
 
