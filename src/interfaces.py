@@ -1,5 +1,6 @@
 import netifaces
 import pandas as pd
+import json
 
 def get_interfaces(interfaces_list):
     interfaces = netifaces.interfaces()
@@ -33,14 +34,19 @@ def get_cidr(last_interface):
 
 def interfaces_table():
     interfaces = netifaces.interfaces()
-    interfaces = [i for i in interfaces]
     if interfaces == []:
         return None
     else:
         ip = []
         netmask = []
         for i in interfaces:
-            ip.append(netifaces.ifaddresses(i)[netifaces.AF_INET][0]['addr'])
-            netmask.append(netifaces.ifaddresses(i)[netifaces.AF_INET][0]['netmask'])
+            try :
+                interface = netifaces.ifaddresses(i)[netifaces.AF_INET][0]
+                ip.append(interface['addr'])
+                netmask.append(interface['netmask'])
+            except KeyError:
+                interfaces.remove(i)
+                continue
+        
         df = pd.DataFrame({'Interface': interfaces, 'IP': ip, 'Netmask': netmask})
         return df

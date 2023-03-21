@@ -1,4 +1,5 @@
 import nmap
+from termcolor import colored
 
 class NmapHandler:
     def __init__(self, networkAddress, ports='22', admin=False):
@@ -14,7 +15,7 @@ class NmapHandler:
                 hosts = self.nmap.all_hosts()
                 return result, hosts
             except Exception as e:
-                print (str(e))
+                print("[!!]"+colored(str(e), 'red'))
             
         else:
             try:
@@ -22,5 +23,5 @@ class NmapHandler:
                 hosts = self.nmap.all_hosts()
                 return result, hosts
             except Exception as e:
-                print (str(e))
+                print("[!!]"+colored(str(e), 'red'))
     

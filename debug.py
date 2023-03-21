@@ -1,22 +1,52 @@
-import os, nmapHandler, time, json, paramiko, netifaces, re
-from termcolor import colored
+import os
+import re
+import json
+import time
+import ctypes
+import paramiko
+from src.nmapHandler import NmapHandler
 from paramiko import SSHClient
+from termcolor import colored
+from src.interfaces import get_interfaces, get_network_address, get_cidr, interfaces_table
 
-# Default interfaces
+# Variables
 KNOWN_INTERFACES = ['rndis0', 'usb0']
+IS_ADMIN = False
 
+# Clear screen
+os.system('clear')
 
+def checkAdmin():
+    try:
+        return os.getuid() == 0
+    except AttributeError:
+        return ctypes.windll.shell32.IsUserAnAdmin() != 0
 
-# Check if run in Termux from prefix
-prefix = os.environ.get('PREFIX')
-if re.search('com.termux', prefix):
-    print( colored('[+] Running in Termux', 'green') )
+# Check os type
+if os.name == 'nt':
+    IS_ADMIN = checkAdmin()
+    print( colored('[X] Running in Windows is not yet supported', 'green') )
     exit()
+else:
+    if os.environ.get('PREFIX') != None:
+        if re.search('com.termux', os.environ.get('PREFIX')):
+            print( colored('[*] Running in Termux', 'green') )
+            print( colored('[*] Scan result may not be accurate', 'light_yellow') )
+            IS_ADMIN = False
+    else:
+        IS_ADMIN = checkAdmin()
+        print( colored('[*] Running in Linux', 'green') )
+        if IS_ADMIN:
+            print( colored('[*] Running as root', 'green') )
+        else:
+            print( colored('[*] Running as normal user', 'green') )
+            print( colored('[*] Scan result may not be accurate', 'light_yellow') )
 
-# If user not ever run this script before make a config file
+
+# Check config file
 if not os.path.isfile('config.json'):
-    username = input( colored('[+] Enter your username: ', 'green') )
-    password = input( colored('[+] Enter your password: ', 'green') )
+    username = input( colored('[?] Enter your username: ', 'green') )
+    password = input( colored('[?] Enter your password: ', 'green') )
     config = {
         'username': username,
         'password': password,
@@ -27,58 +57,35 @@ if not os.path.isfile('config.json'):
     with open('config.json', 'w') as f:
         json.dump(config, f)
 
-    # restart script
-    os.system('python3 debug.py')
-    exit()
-
-# read config file
-print( colored('[+] config file found', 'green') )
+# Read config file
 with open('config.json', 'r') as f:
     config = json.load(f)
 
-# get interfaces
-interfaces = netifaces.interfaces()
+# Get interfaces
+if config['last_interface'] == '':
+    interfaces = get_interfaces(KNOWN_INTERFACES)
+    if interfaces == None:
+        print( colored('[X] No interface found', 'red') )
+        print( colored('[?] Type interface to be using\n', 'green') )
+        print( colored( interfaces_table().to_string(index=False), 'cyan'))
 
-# if interface is contain in KNOWN_INTERFACES
-interfaces = [i for i in interfaces if i in KNOWN_INTERFACES]
-config['last_interface'] = interfaces[0]
+        config['last_interface'] = input( colored('[?] Enter interface: ', 'green') )
+        with open('config.json', 'w') as f:
+            json.dump(config, f)
 
-# get ip address and netmask of interface
-ip = netifaces.ifaddresses(config['last_interface'])[netifaces.AF_INET][0]['addr']
-netmask = netifaces.ifaddresses(config['last_interface'])[netifaces.AF_INET][0]['netmask']
+# Get network address and cidr
+cidr = get_cidr(config['last_interface'])
+network_address = get_network_address(config['last_interface']) + '/' + str(cidr)
 
-# make function that calculate network address and cidr
-def get_network_address(ip, netmask):
-    ip = ip.split('.')
-    netmask = netmask.split('.')
-    network_address = []
-    for i in range(len(ip)):
-        network_address.append( str( int(ip[i]) & int(netmask[i]) ) )
-    return '.'.join(network_address)
+print( colored('[+] Network address: ', 'green') + network_address )
+print( colored('[+] CIDR: ', 'green') + str(cidr) )
 
-def get_cidr(netmask):
-    netmask = netmask.split('.')
-    cidr = 0
-    for i in netmask:
-        cidr += bin(int(i)).count('1')
-    return cidr
-
-# get network address and cidr
-network_address = get_network_address(ip, netmask)
-cidr = get_cidr(netmask)
-
-print( colored('[+] Network address: ', 'green') + network_address+'/'+str(cidr) )
-
-# do nmap scan
-print( colored('[+] Scanning...', 'green') )
-
-HOSTS=[]
 COUNTER = 0
 
 while True:
-    nm = nmapHandler.PortScanner()
-    nm.scan(hosts=network_address+'/'+str(cidr), ports='22', arguments='-T5 -n -Pn --open --max-retries 0 --max-scan-delay 0 --min-rate 10000 --max-rate 10000')
-    hosts = nm.all_hosts()
+    nm = NmapHandler(networkAddress=network_address, admin=IS_ADMIN)
+    result, hosts = nm.scan()
+    print(hosts)
 
     if len(hosts) == 0:
         COUNTER += 1
@@ -86,7 +93,6 @@ while True:
         time.sleep(config['delay'])
     elif len(hosts) >= 1:
         break
-    
 
 print( colored('[+] Found hosts: ', 'green') + str(len(hosts)) )
 if len(hosts) == 0:
@@ -98,6 +104,8 @@ elif len(hosts) > 1:
 else:
     pass
 
+exit()
+
 # do dmesg
 print( colored('[+] Getting dmesg...', 'green') )
 client = SSHClient()
@@ -105,7 +113,7 @@ client.set_missing_host_key_policy(paramiko.MissingHostKeyPolicy()) #BYPASS MITM
 client.connect(hostname=hosts[0] ,username=config['username'], password=config['password'])
 
 # execute command
-stdout = client.exec_command('echo "HELLO WORLD" | curl -F file=@- 0x0.local')
+stdout = client.exec_command('echo '+config['password']+' | sudo -S dmesg | curl -F file=@- 0x0.local')
 
 # get output
 output = stdout[1].read().decode('utf-8')

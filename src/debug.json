@@ -1,0 +1,54 @@
+{
+    "17": [{
+            "addr": "00:00:00:00:00:00", "peer": "00:00:00:00:00:00"
+        }],
+    "2": [{
+            "addr": "127.0.0.1", "netmask": "255.0.0.0", "peer": "127.0.0.1"
+        }], 
+    "10": [{
+            "addr": "::1", "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff/128"
+        }]
+}
+{
+    "17": [{
+        "addr": "94:e6:f7:1d:5e:70",
+        "broadcast": "ff:ff:ff:ff:ff:ff"
+        }],
+    "2": [{
+        "addr": "192.168.10.142", 
+        "netmask": "255.255.255.0", 
+        "broadcast": "192.168.10.255"
+        }],
+    "10": [{
+        "addr": "fe80::31e:62ba:6db2:202e%wlp1s0",
+        "netmask": "ffff:ffff:ffff:ffff::/64"
+        }]
+}
+{
+    "17": [{
+        "addr": "52:54:00:3a:b2:26",
+        "broadcast": "ff:ff:ff:ff:ff:ff"
+        }],
+    "2": [{
+        "addr": "192.168.122.1",
+        "netmask": "255.255.255.0",
+        "broadcast": "192.168.122.255"
+        }]
+}
+{
+    "17": [{
+        "addr": "02:42:61:e8:6b:b3",
+        "broadcast": "ff:ff:ff:ff:ff:ff"
+        }], 
+    "2": [{
+        "addr": "172.17.0.1", 
+        "netmask": "255.255.0.0", 
+        "broadcast": "172.17.255.255"
+        }]
+}
+{
+    "17": [{
+        "addr": "0a:00:27:00:00:00", 
+        "broadcast": "ff:ff:ff:ff:ff:ff"
+        }]
+}
