@@ -69,5 +69,5 @@ def interfaces_table():
             return df
         else:
             print( colored("[*] Interface, Ip, Netmask","yellow") )
-            for interface, ip, netmask in interfaces_list:
+            for interface, ip, netmask in zip(interfaces_list, ip, netmask):
                 print( colored(interface+", "+ip+", "+netmask, "cyan") )
