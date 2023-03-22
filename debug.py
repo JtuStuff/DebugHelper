@@ -92,6 +92,8 @@ if config['last_interface'] == '':
         config['last_interface'] = input( colored('[?] Enter interface: ', 'green') )
         with open('config.json', 'w') as f:
             json.dump(config, f)
+    else:
+        config['last_interface'] = interfaces[0]
 
 # Using interface
 print( colored('[+] Using interface: ', 'green') + config['last_interface'])
