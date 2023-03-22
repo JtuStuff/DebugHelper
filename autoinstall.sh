@@ -51,6 +51,16 @@ termux_setup(){
     printf "${GREEN}Installing Python Numpy ...${NC}\n"
     apt-get install python-numpy -y > /dev/null
 
+    printf "${GREEN}Installing Python Cryptography ...${NC}\n"
+    apt-get install python-cryptography -y > /dev/null
+
+    printf "${GREEN}Installing Python Bcrypt ...${NC}\n"
+    apt-get install python-bcrypt -y > /dev/null
+
+    printf "${GREEN}Installing Python Pynacl ...${NC}\n"
+    apt-get install clang python libffi openssl libsodium -y > /dev/null
+    SODIUM_INSTALL=system pip install pynacl
+
     # Cloning repo
     git_clone()
     
