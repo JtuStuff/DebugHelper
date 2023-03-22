@@ -1,19 +1,8 @@
 import netifaces
-import re
-import os
-import json
 from termcolor import colored
-
-IS_TERMUX = False
-
-# if os.environ.get('PREFIX') != None:
-#         if re.search('com.termux', os.environ.get('PREFIX')):
-#             IS_TERMUX = True
-#             import pandas as pd
 
 try: 
     import pandas as pd
-    IS_TERMUX = True
 except ImportError:
     pass
 
@@ -47,7 +36,7 @@ def get_cidr(last_interface):
         cidr += bin(int(i)).count('1')
     return cidr
 
-def interfaces_table():
+def interfaces_table(IS_TERMUX=False):
     interfaces = netifaces.interfaces()
     if interfaces == []:
         return None
@@ -65,9 +54,10 @@ def interfaces_table():
             except KeyError:
                 interfaces.remove(i)
         if IS_TERMUX:        
-            df = pd.DataFrame({'Interface': interfaces_list, 'IP': ip, 'Netmask': netmask})
-            return df
-        else:
             print( colored("[*] Interface, Ip, Netmask","yellow") )
             for interface, ip, netmask in zip(interfaces_list, ip, netmask):
                 print( colored(interface+", "+ip+", "+netmask, "cyan") )
+        else:
+            df = pd.DataFrame({'Interface': interfaces_list, 'IP': ip, 'Netmask': netmask})
+            return df
+            

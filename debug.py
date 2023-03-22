@@ -50,13 +50,22 @@ if not os.path.isfile('config.json'):
     print( colored('[*] No config found running one time configuration', 'light_yellow') )
     username = input( colored('[?] Enter your username: ', 'green') )
     password = input( colored('[?] Enter your password: ', 'green') )
+    hosting = input( colored('[?] Enter hosting provider: [default 0x0.st]', 'green'))
+    delay = input( colored('[?] Enter delay: [default 3s]', 'green'))
     config = {
         'username': username,
         'password': password,
-        'hosting': 'http://0x0.local',
+        'hosting': '',
         'last_interface': '',
-        'delay': 3
+        'delay': ''
     }
+
+    if hosting == '':
+        config['hosting'] = 'http://0x0.st'
+    
+    if delay == '':
+        config['delay'] = 3
+
     with open('config.json', 'w') as f:
         json.dump(config, f)
     
@@ -76,7 +85,7 @@ if config['last_interface'] == '':
         print( colored('[X] No interface found', 'red') )
         print( colored('[?] Type interface to be using\n', 'green') )
         if IS_TERMUX:
-            pass
+            interfaces_table(IS_TERMUX)
         else:
             print( colored( interfaces_table().to_string(index=False), 'cyan'))
 
