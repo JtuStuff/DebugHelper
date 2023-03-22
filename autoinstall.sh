@@ -69,7 +69,7 @@ termux_setup(){
 
     pip install -r requirements.txt
 
-    python3 debug.py
+    printf "Please do first setup by cd DebugHelper && python3 debug.py"
 }
 
 if echo $PREFIX | grep -q "com.termux"; then
