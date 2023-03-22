@@ -69,8 +69,8 @@ if not os.path.isfile('config.json'):
     with open('config.json', 'w') as f:
         json.dump(config, f)
     
-    print( colored('[*] Please restart the app ...', 'light_yellow') )
-    print( colored('[*] "cd DebugHelper && python3 debug.py"', 'light_yellow') )
+    print( colored('[*] Please restart the app & Make Sure You In The Folder ...', 'light_yellow') )
+    print( colored('[*] "python3 debug.py"', 'light_yellow') )
     input("Press Enter to continue...")
     exit()
 

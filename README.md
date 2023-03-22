@@ -4,7 +4,7 @@ this script supposedly to scan the network and connect trough ssh and dmesg thin
 
 # USAGE ON TERMUX
 ```sh
-curl -o- https://raw.githubusercontent.com/FlyingThaCat/IPscan/main/runs.sh | bash
+curl -o- https://raw.githubusercontent.com/JtuStuff/DebugHelper/main/autoinstall.sh | bash
 ```
 
 # Linux Based System
