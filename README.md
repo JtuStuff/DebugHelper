@@ -2,6 +2,8 @@
 this script supposedly to scan the network and connect trough ssh and dmesg things 
 
 # Based On [This Tutorial](https://github.com/JtuStuff/DebugHelper/blob/main/tutors.md)
+## MAKE SURE TO INSTALL NMAP !!! 
+### FROM YOUR OS ex "pkg install nmap" for termux / brew install nmap
 
 # USAGE ON TERMUX
 ```sh
