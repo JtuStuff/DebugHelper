@@ -36,7 +36,7 @@ printf "${GREEN}Upgrading Termux ...${NC}\n"
 printf "${BLUE}This May Take A While ...${NC}\n"
 apt-get upgrade -y -q -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" > /dev/null
 
-Function To Check If Package Is Installed
+# Function To Check If Package Is Installed
 check_package(){
   if ! command -v $1 &> /dev/null
   then 

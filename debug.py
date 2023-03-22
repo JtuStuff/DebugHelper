@@ -12,6 +12,7 @@ from src.interfaces import get_interfaces, get_network_address, get_cidr, interf
 # Variables
 KNOWN_INTERFACES = ['rndis0', 'usb0']
 IS_ADMIN = False
+IS_TERMUX = False
 
 # Clear screen
 os.system('clear')
@@ -33,6 +34,7 @@ else:
             print( colored('[*] Running in Termux', 'green') )
             print( colored('[*] Scan result may not be accurate', 'light_yellow') )
             IS_ADMIN = False
+            IS_TERMUX = True
     else:
         IS_ADMIN = checkAdmin()
         print( colored('[*] Running in Linux', 'green') )
@@ -67,7 +69,10 @@ if config['last_interface'] == '':
     if interfaces == None:
         print( colored('[X] No interface found', 'red') )
         print( colored('[?] Type interface to be using\n', 'green') )
-        print( colored( interfaces_table().to_string(index=False), 'cyan'))
+        if IS_TERMUX:
+            pass
+        else:
+            print( colored( interfaces_table().to_string(index=False), 'cyan'))
 
         config['last_interface'] = input( colored('[?] Enter interface: ', 'green') )
         with open('config.json', 'w') as f:
