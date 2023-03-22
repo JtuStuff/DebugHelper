@@ -11,13 +11,13 @@ NC='\033[0m'
 clear
 
 # Pause Function
-pause(){
+paused(){
  read -r -s -n 1 -p "Press any key to continue . . ." </dev/tty
  echo ""
 }
 
 printf "${BLUE}This script is auto install all the required package ...${NC}\n"
-pause()
+paused
 
 # Git clone function
 git_clone() {
@@ -62,14 +62,17 @@ termux_setup(){
     SODIUM_INSTALL=system pip install pynacl
 
     # Cloning repo
-    git_clone()
+    git_clone
     
     # Change dir
     cd DebugHelper
 
     pip install -r requirements.txt
 
+    python3 debug.py
 }
 
 if echo $PREFIX | grep -q "com.termux"; then
     printf "${GREEN}Running On Termux ...${NC}\n"
+    termux_setup
+fi

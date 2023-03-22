@@ -6,10 +6,16 @@ from termcolor import colored
 
 IS_TERMUX = False
 
-if os.environ.get('PREFIX') != None:
-        if re.search('com.termux', os.environ.get('PREFIX')):
-            IS_TERMUX = True
-            import pandas as pd
+# if os.environ.get('PREFIX') != None:
+#         if re.search('com.termux', os.environ.get('PREFIX')):
+#             IS_TERMUX = True
+#             import pandas as pd
+
+try: 
+    import pandas as pd
+    IS_TERMUX = True
+except ImportError:
+    pass
 
 def get_interfaces(interfaces_list):
     interfaces = netifaces.interfaces()
