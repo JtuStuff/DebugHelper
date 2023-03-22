@@ -93,7 +93,7 @@ if config['last_interface'] == '':
         with open('config.json', 'w') as f:
             json.dump(config, f)
     else:
-        config['last_interface'] = interfaces[0]
+        config['last_interface'] = interfaces
 
 # Using interface
 print( colored('[+] Using interface: ', 'green') + config['last_interface'])
