@@ -67,8 +67,7 @@ termux_setup(){
     # Change dir
     cd DebugHelper
 
-    export CFLAGS="-Wno-deprecated-declarations -Wno-unreachable-code" pip install pandas
-    
+    pip install -r requirements.txt
 
 }
 

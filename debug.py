@@ -47,6 +47,7 @@ else:
 
 # Check config file
 if not os.path.isfile('config.json'):
+    print( colored('[*] No config found running one time configuration', 'light_yellow') )
     username = input( colored('[?] Enter your username: ', 'green') )
     password = input( colored('[?] Enter your password: ', 'green') )
     config = {
@@ -58,6 +59,11 @@ if not os.path.isfile('config.json'):
     }
     with open('config.json', 'w') as f:
         json.dump(config, f)
+    
+    print( colored('[*] Please restart the app ...', 'light_yellow') )
+    print( colored('[*] "python3 debug.py"', 'light_yellow') )
+    input("Press Enter to continue...")
+    exit()
 
 # Read config file
 with open('config.json', 'r') as f:
