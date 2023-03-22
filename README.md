@@ -1,6 +1,7 @@
 # DebugHelper
 this script supposedly to scan the network and connect trough ssh and dmesg things 
 
+# Based On [This Tutorial](https://github.com/JtuStuff/DebugHelper/blob/main/tutors.md)
 
 # USAGE ON TERMUX
 ```sh
