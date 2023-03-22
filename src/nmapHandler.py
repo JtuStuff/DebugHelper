@@ -1,3 +1,4 @@
+import re
 import nmap
 from termcolor import colored
 
@@ -11,17 +12,24 @@ class NmapHandler:
     def scan(self):
         if self.admin:
             try:
-                result = self.nmap.scan(hosts=self.networkAddress, ports=self.ports, arguments='-T5 -n -Pn --open --max-retries 0 --max-scan-delay 0 --min-rate 10000 --max-rate 10000 -O')
+                self.nmap.scan(hosts=self.networkAddress, ports=self.ports, arguments='-T5 -n -Pn --open --max-retries 0 --max-scan-delay 0 --min-rate 10000 --max-rate 10000 -O')
                 hosts = self.nmap.all_hosts()
-                return result, hosts
+                for host in hosts:
+                    if 'osmatch' in self.nmap[host]:
+                        for osmatch in self.nmap[host]['osmatch']:
+                            if re.search("(?i)apple", osmatch["name"]):
+                                return [host]
+                            break
+                    else:
+                        print("[X] OS not detected")
             except Exception as e:
                 print("[!!]"+colored(str(e), 'red'))
             
         else:
             try:
-                result = self.nmap.scan(hosts=self.networkAddress, ports=self.ports, arguments='-T5 -n -Pn --open --max-retries 0 --max-scan-delay 0 --min-rate 10000 --max-rate 10000')
+                self.nmap.scan(hosts=self.networkAddress, ports=self.ports, arguments='-T5 -n -Pn --open --max-retries 0 --max-scan-delay 0 --min-rate 10000 --max-rate 10000')
                 hosts = self.nmap.all_hosts()
-                return result, hosts
+                return hosts
             except Exception as e:
                 print("[!!]"+colored(str(e), 'red'))
     

@@ -39,14 +39,15 @@ def interfaces_table():
     else:
         ip = []
         netmask = []
+        interfaces_list = []
         for i in interfaces:
-            try :
+            try:
                 interface = netifaces.ifaddresses(i)[netifaces.AF_INET][0]
-                ip.append(interface['addr'])
-                netmask.append(interface['netmask'])
+                if interface['addr'] and interface['netmask']:
+                    ip.append(interface['addr'])
+                    netmask.append(interface['netmask'])
+                    interfaces_list.append(i)
             except KeyError:
                 interfaces.remove(i)
-                continue
-        
-        df = pd.DataFrame({'Interface': interfaces, 'IP': ip, 'Netmask': netmask})
+        df = pd.DataFrame({'Interface': interfaces_list, 'IP': ip, 'Netmask': netmask})
         return df

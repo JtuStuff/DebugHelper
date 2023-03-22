@@ -73,6 +73,9 @@ if config['last_interface'] == '':
         with open('config.json', 'w') as f:
             json.dump(config, f)
 
+# Using interface
+print( colored('[+] Using interface: ', 'green') + config['last_interface'])
+
 # Get network address and cidr
 cidr = get_cidr(config['last_interface'])
 network_address = get_network_address(config['last_interface']) + '/' + str(cidr)
@@ -84,8 +87,7 @@ COUNTER = 0
 
 while True:
     nm = NmapHandler(networkAddress=network_address, admin=IS_ADMIN)
-    result, hosts = nm.scan()
-    print(hosts)
+    hosts = nm.scan()
 
     if len(hosts) == 0:
         COUNTER += 1
@@ -104,8 +106,6 @@ elif len(hosts) > 1:
 else:
     pass
 
-exit()
-
 # do dmesg
 print( colored('[+] Getting dmesg...', 'green') )
 client = SSHClient()
@@ -113,7 +113,7 @@ client.set_missing_host_key_policy(paramiko.MissingHostKeyPolicy()) #BYPASS MITM
 client.connect(hostname=hosts[0] ,username=config['username'], password=config['password'])
 
 # execute command
-stdout = client.exec_command('echo '+config['password']+' | sudo -S dmesg | curl -F file=@- 0x0.local')
+stdout = client.exec_command('echo '+config['password']+' | sudo -S dmesg | curl -F file=@- '+config['hosting'])
 
 # get output
 output = stdout[1].read().decode('utf-8')
@@ -122,11 +122,11 @@ print( colored('[+] Output: ', 'green') + output )
 # make enter to continue
 input( colored('[!] Press enter when the screen goes black with the backlight on for 30+ seconds', 'green') )
 
-stdout = client.exec_command('ioreg -flxw0 | curl -F file=@- 0x0.local')
+stdout = client.exec_command('ioreg -flxw0 | curl -F file=@- '+config['hosting'])
 output = stdout[1].read().decode('utf-8')
 print( colored('[+] Output: ', 'green') + output )
 
-stdout = client.exec_command('/System/Library/Extensions/AppleGraphicsControl.kext/Contents/MacOS/AGDCDiagnose | curl -F file=@- 0x0.local')
+stdout = client.exec_command('/System/Library/Extensions/AppleGraphicsControl.kext/Contents/MacOS/AGDCDiagnose | curl -F file=@- '+config['hosting'])
 output = stdout[1].read().decode('utf-8')
 print( colored('[+] Output: ', 'green') + output )
 
