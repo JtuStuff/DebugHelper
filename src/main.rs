@@ -37,7 +37,7 @@ impl Default for Config {
         Self {
             username: String::from(""),
             password: String::from(""),
-            hosting: String::from("https://0x0.st/"),
+            hosting: String::from(""),
             last_interface: String::from(""),
         }
     }
@@ -73,7 +73,7 @@ fn main() {
             println!("Config file already exists, do you want to overwrite it? [y/N]");
             let mut input = String::new();
             std::io::stdin().read_line(&mut input).unwrap();
-            if input.trim() == "y" {
+            if input.trim().to_lowercase() == "y" {
                 // confy::store("debug_helper", Config::default()).unwrap();
                 println!("Config file created");
                 process::exit(0);
@@ -82,6 +82,33 @@ fn main() {
                 process::exit(0);
             }
         } else {
+            // Initialize the struct
+            let mut username = String::new();
+            let mut password = String::new();
+            let mut hosting = String::new();
+
+            // Get the username
+            println!("Please enter your username");
+            std::io::stdin().read_line(&mut username).unwrap();
+            username = username.trim().to_string();
+
+            // Get the password
+            println!("Please enter your password");
+            std::io::stdin().read_line(&mut password).unwrap();
+            password = password.trim().to_string();
+
+            // Get the hosting
+            println!("Please enter the hosting Default: https://0x0.st/");
+            std::io::stdin().read_line(&mut hosting).unwrap();
+            hosting = hosting.trim().to_string();
+            if hosting == "" {
+                hosting = String::from("https://0x0.st/");
+            }
+            
+            println!("Username: {}", username);
+            println!("Password: {}", username);
+            println!("Hosting: {}", hosting);
+
             // confy::store("debug_helper", Config::default()).unwrap();
             println!("Config file created");
             // process::exit(0);
