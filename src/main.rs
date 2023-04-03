@@ -278,14 +278,15 @@ fn main() {
     let last_ip = subnet.broadcast();
     while true {
         for ip in subnet.iter() {
-            if ip == last_ip {
-                println!("Retrying Subnet Scan... {} times", counter);
-                counter += 1;
-            }
-            // Handle if more than one ip with open port 22
             if connect_to_port(ip, 22) {
                 // add the ip to the vector
                 ips.push(ip);
+            }
+        }
+        // if there is not more than one ip with open port 22
+        if ips.len() == 1 {
+            // print the ips
+            for ip in ips {
                 println!("{}:22 is open", ip);
                 let tcp = format!("{}:22", ip);
                 let mut session = Session::new().unwrap();
@@ -294,10 +295,12 @@ fn main() {
                 session.userauth_password(&config.username, &config.password).unwrap();
                 let result = run_ssh_command(&mut session, "ls");
                 println!("{}", result);
-
-                process::exit(0);
             }
-            
+            // exit the program
+            process::exit(0);
+        } else {
+            println!("More than one ip with open port 22");
+            process::exit(1);
         }
     }
 
