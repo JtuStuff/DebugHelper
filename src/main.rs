@@ -265,21 +265,40 @@ fn main() {
     // get the cidr
     let cidr = network.prefix();
     
+    // create the subnet
     let subnet = IpNetwork::new(ip, cidr).unwrap();
-    for ip in subnet.iter() {
-        if connect_to_port(ip, 22) {
-            println!("{}:22 is open", ip);
-            let tcp = format!("{}:22", ip);
-            let mut session = Session::new().unwrap();
-            session.set_tcp_stream(TcpStream::connect(tcp).unwrap());
-            session.handshake().unwrap();
-            session.userauth_password(&config.username, &config.password).unwrap();
-            let result = run_ssh_command(&mut session, "ls");
-            println!("{}", result);
 
-            process::exit(0);
+    // store count value
+    let mut counter: u32 = 0;
+
+    // store ips in a vector
+    let mut ips: Vec<IpAddr> = Vec::new();
+
+    // get the last ip in the subnet
+    let last_ip = subnet.broadcast();
+    while true {
+        for ip in subnet.iter() {
+            if ip == last_ip {
+                println!("Retrying Subnet Scan... {} times", counter);
+                counter += 1;
+            }
+            // Handle if more than one ip with open port 22
+            if connect_to_port(ip, 22) {
+                // add the ip to the vector
+                ips.push(ip);
+                println!("{}:22 is open", ip);
+                let tcp = format!("{}:22", ip);
+                let mut session = Session::new().unwrap();
+                session.set_tcp_stream(TcpStream::connect(tcp).unwrap());
+                session.handshake().unwrap();
+                session.userauth_password(&config.username, &config.password).unwrap();
+                let result = run_ssh_command(&mut session, "ls");
+                println!("{}", result);
+
+                process::exit(0);
+            }
+            
         }
     }
-
 
 }
