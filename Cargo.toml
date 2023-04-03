@@ -9,4 +9,6 @@ edition = "2021"
 clap = { version = "4.2.1", features = ["derive"] }
 confy = "0.5.1"
 ipnetwork = "0.20.0"
+pnet = "0.33.0"
 serde = { version = "1.0.159", features = ["derive"] }
+ssh2 = "0.9.4"
