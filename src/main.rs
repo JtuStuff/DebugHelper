@@ -4,6 +4,7 @@ use std::process::Command;
 use clap::Parser;
 use std::path::Path;
 use pnet::datalink;
+use crate::datalink::NetworkInterface;
 use std::net::{IpAddr, SocketAddr, TcpStream};
 use std::time::Duration;
 use serde::{Deserialize, Serialize};
@@ -16,7 +17,7 @@ use ssh2::{Session, Channel};
 // ADD VERBOSE
 
 // REMOVE THE wlp1s0
-const KNOWN_INTERFACES: [&str; 3] = ["wlp1s0", "rndis0", "usb0"];
+const KNOWN_INTERFACES: [&str; 2] = ["rndis0", "usb0"];
 
 #[derive(Serialize, Deserialize, Parser, Debug)]
 #[command(name = "DebugHelper")]
@@ -40,6 +41,7 @@ struct Config {
     password: String,
     hosting: String,
     last_interface: String,
+    fallback_interface: String,
 }
 
 impl Default for Config {
@@ -129,6 +131,9 @@ fn main() {
                 println!("Please enter the fallback interface Default: wlp1s0");
                 std::io::stdin().read_line(&mut fallback_interface).unwrap();
                 fallback_interface = fallback_interface.trim().to_string();
+                if fallback_interface == "" {
+                    fallback_interface = String::from("");
+                }
 
                 // write the config file
                 confy::store("debug_helper", "config", Config {
@@ -136,6 +141,7 @@ fn main() {
                     password: password,
                     hosting: hosting,
                     last_interface: String::from(""),
+                    fallback_interface: fallback_interface,
                 }).unwrap(); 
 
                 println!("Config file created");
@@ -145,7 +151,44 @@ fn main() {
                     process::exit(0);
                 }
         } else {
-            
+            // Initialize the struct
+            let mut username = String::new();
+            let mut password = String::new();
+            let mut hosting = String::new();
+            let mut fallback_interface = String::new();
+
+            // Get the username
+            println!("Please enter your username");
+            std::io::stdin().read_line(&mut username).unwrap();
+            username = username.trim().to_string();
+
+            // Get the password
+            println!("Please enter your password");
+            std::io::stdin().read_line(&mut password).unwrap();
+            password = password.trim().to_string();
+
+            // Get the hosting
+            println!("Please enter the hosting Default: https://0x0.st/");
+            std::io::stdin().read_line(&mut hosting).unwrap();
+            hosting = hosting.trim().to_string();
+            if hosting == "" {
+                hosting = String::from("https://0x0.st/");
+            }
+
+            // Get the fallback interface example wifi interface
+            println!("Please enter the fallback interface Default: wlp1s0");
+            std::io::stdin().read_line(&mut fallback_interface).unwrap();
+            fallback_interface = fallback_interface.trim().to_string();
+
+            // write the config file
+            confy::store("debug_helper", "config", Config {
+                username: username,
+                password: password,
+                hosting: hosting,
+                last_interface: String::from(""),
+                fallback_interface: fallback_interface,
+            }).unwrap(); 
+
             println!("Config file created");
             process::exit(0);
         }
@@ -161,11 +204,54 @@ fn main() {
     let config: Config = confy::load("debug_helper", "config").unwrap();
  
     let interfaces = datalink::interfaces();
-    let interface = &interfaces
-        .iter()
-        .find(|iface| KNOWN_INTERFACES.contains(&iface.name.as_str()))
-        .expect("No interface found");
+    
+    let mut interface: &NetworkInterface;
 
+    let interface = if config.last_interface != "" {
+        // try using last_interface first
+        interfaces
+            .iter()
+            .find(|iface| iface.name == config.last_interface)
+            .or_else(|| {
+                // try using fallback_interface if last_interface is not found
+                println!("Warning: Interface '{}' not found, trying fallback_interface...", config.last_interface);
+                interfaces
+                    .iter()
+                    .find(|iface| iface.name == config.fallback_interface)
+            })
+            .or_else(|| {
+                // try using known_interfaces if fallback_interface is not found
+                println!("Warning: Fallback interface '{}' not found, trying known_interfaces...", config.fallback_interface);
+                interfaces
+                    .iter()
+                    .find(|iface| KNOWN_INTERFACES.contains(&iface.name.as_str()))
+            })
+            .unwrap_or_else(|| {
+                // panic if no interface is found
+                eprintln!("Error: No interface found");
+                process::exit(1);
+            })
+    } else {
+        // try using known_interfaces first
+        interfaces
+            .iter()
+            .find(|iface| KNOWN_INTERFACES.contains(&iface.name.as_str()))
+            .or_else(|| {
+                // try using fallback_interface if known_interfaces is not found
+                println!("Warning: No known interfaces found, trying fallback_interface...");
+                interfaces
+                    .iter()
+                    .find(|iface| iface.name == config.fallback_interface)
+            })
+            .unwrap_or_else(|| {
+                // panic if no interface is found
+                eprintln!("Error: No interface found");
+                process::exit(1);
+            })
+    };
+    
+    println!("Using interface: {}", interface.name);
+    
     // get interface network address and cidr
     let network = interface
         .ips
@@ -181,7 +267,6 @@ fn main() {
     
     let subnet = IpNetwork::new(ip, cidr).unwrap();
     for ip in subnet.iter() {
-        println!("Scanning {}", ip);
         if connect_to_port(ip, 22) {
             println!("{}:22 is open", ip);
             let tcp = format!("{}:22", ip);
