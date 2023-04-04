@@ -4,12 +4,11 @@ use std::process::Command;
 use clap::Parser;
 use std::path::Path;
 use pnet::datalink;
-use crate::datalink::NetworkInterface;
 use std::net::{IpAddr, SocketAddr, TcpStream};
 use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
-use ssh2::{Session, Channel};
+use ssh2::Session;
 
 
 // ADD HANDLER IF THE INTERFACE IS NOT KNOWN
@@ -204,8 +203,6 @@ fn main() {
     let config: Config = confy::load("debug_helper", "config").unwrap();
  
     let interfaces = datalink::interfaces();
-    
-    let mut interface: &NetworkInterface;
 
     let interface = if config.last_interface != "" {
         // try using last_interface first
@@ -268,15 +265,10 @@ fn main() {
     // create the subnet
     let subnet = IpNetwork::new(ip, cidr).unwrap();
 
-    // store count value
-    let mut counter: u32 = 0;
-
     // store ips in a vector
     let mut ips: Vec<IpAddr> = Vec::new();
 
-    // get the last ip in the subnet
-    let last_ip = subnet.broadcast();
-    while true {
+    loop {
         for ip in subnet.iter() {
             if connect_to_port(ip, 22) {
                 // add the ip to the vector
@@ -292,6 +284,7 @@ fn main() {
                 let mut session = Session::new().unwrap();
                 session.set_tcp_stream(TcpStream::connect(tcp).unwrap());
                 session.handshake().unwrap();
+                // maybe do connect to all open 22 port and if it connects then do the auth if not then try the next ip
                 session.userauth_password(&config.username, &config.password).unwrap();
                 let result = run_ssh_command(&mut session, "ls");
                 println!("{}", result);
